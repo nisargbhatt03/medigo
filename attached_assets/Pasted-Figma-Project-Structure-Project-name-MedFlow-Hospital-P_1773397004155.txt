@@ -1,0 +1,235 @@
+Figma Project Structure
+
+Project name:
+
+MedFlow – Hospital POS Platform
+
+Pages inside Figma file:
+
+01 Design System
+02 Web Dashboard
+03 Patient Mobile App
+04 Doctor Tablet UI
+05 Reception POS
+06 Queue Display System
+07 Prototype Flow
+1. Design System Page
+
+Create reusable components first.
+
+Colors
+
+Primary
+
+Primary Blue  #2563EB
+Teal          #14B8A6
+Green         #22C55E
+Orange        #F59E0B
+Red           #EF4444
+
+Neutral
+
+Background  #F8FAFC
+Card        #FFFFFF
+Border      #E5E7EB
+Text        #111827
+Typography
+Font: Inter
+
+Styles
+
+H1 32px
+H2 24px
+H3 18px
+Body 14px
+Caption 12px
+Components
+
+Create these components in Figma:
+
+Button Primary
+Button Secondary
+Input Field
+Dropdown
+Modal
+Table
+Sidebar
+Navbar
+Card Widget
+Status Badge
+Queue Token Card
+2. Web Dashboard (50 Screens)
+
+Frame size
+
+1440 x 1024
+
+Layout grid
+
+12 columns
+24px margin
+16px gutter
+Admin Dashboard
+
+Widgets
+
+Patients Today
+Doctors Active
+Revenue
+Queue Status
+
+Charts
+
+Patients per doctor
+Daily visits
+Referral chart
+Appointment List
+
+Table layout
+
+Patient | Doctor | Time | Status | Action
+
+Buttons
+
+Add Appointment
+Export
+Filter
+Queue Management
+
+Frame name:
+
+Doctor Queue
+
+Design
+
+---------------------------------
+
+Doctor: Dr Shah
+
+Token | Patient | Status
+
+101   Ramesh    Waiting
+102   Amit      Waiting
+103   Mohit     Waiting
+
+---------------------------------
+
+[ CALL NEXT ]
+[ SKIP ]
+[ COMPLETE ]
+
+---------------------------------
+Consultation Screen
+
+Layout
+
+LEFT
+Patient History
+
+CENTER
+Diagnosis
+
+RIGHT
+Prescription
+3. Patient Mobile App (30 Screens)
+
+Frame size
+
+390 x 844
+Home Screen
+
+Sections
+
+Upcoming Appointment
+Nearby Doctors
+Health Records
+Book Appointment
+Doctor Profile
+Doctor photo
+Specialization
+Experience
+Rating
+Available slots
+
+Button
+
+Book Appointment
+Appointment Booking
+
+Steps
+
+Select Doctor
+Select Date
+Select Time
+Confirm
+4. Doctor Tablet UI
+
+Frame size
+
+1024 x 768
+
+Layout
+
+Left Panel   : Patient queue
+Center       : Consultation
+Right Panel  : Prescription
+5. Reception POS Screen
+
+Frame size
+
+1440 x 900
+
+Layout similar to restaurant POS.
+
+--------------------------------
+
+Search Patient
+
+[ Add Walk-in Patient ]
+
+--------------------------------
+
+Queue Table
+
+Token | Patient | Doctor | Status
+
+--------------------------------
+
+Buttons
+
+Check-in
+Assign Doctor
+Print Token
+
+--------------------------------
+6. Hospital Queue Display Screen
+
+Frame size
+
+1920 x 1080
+
+Large text layout
+
+NOW SERVING
+
+Token 102
+Ramesh Patel
+
+Cabin 2
+
+NEXT
+
+Token 103
+Amit Shah
+7. Prototype Flow
+
+Create clickable flow in Figma:
+
+Patient Booking
+→ Appointment Created
+→ Patient Check-in
+→ Queue
+→ Doctor Call
+→ Consultation
+→ Prescription
+→ Pharmacy

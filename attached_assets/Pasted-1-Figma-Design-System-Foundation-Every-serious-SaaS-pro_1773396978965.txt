@@ -1,0 +1,374 @@
+1. Figma Design System (Foundation)
+
+Every serious SaaS product starts with a design system.
+
+Grid System
+Desktop width: 1440px
+Tablet width: 1024px
+Mobile width: 390px
+
+Column grid: 12 columns
+Margin: 24px
+Gutter: 16px
+Color Palette
+
+Primary color (healthcare + trust):
+
+Primary Blue   #2563EB
+Secondary Teal #14B8A6
+Accent Green   #22C55E
+Danger Red     #EF4444
+Warning Orange #F59E0B
+
+Background:
+
+Light BG #F8FAFC
+Card BG  #FFFFFF
+Border   #E5E7EB
+Text     #111827
+Typography
+Font: Inter / Poppins
+
+Heading XL: 32px
+Heading L : 24px
+Heading M : 18px
+Body      : 14px
+Caption   : 12px
+Core Components (Reusable)
+
+Create these components in Figma first:
+
+Buttons
+
+Primary
+
+[ Call Next Patient ]
+color: blue
+
+Secondary
+
+[ Refer Patient ]
+outline style
+
+Danger
+
+[ Cancel Appointment ]
+Cards
+
+Example:
+
+-------------------
+Patients Today
+124
+-------------------
+Tables
+Patient | Doctor | Time | Status | Action
+Status Badges
+Waiting    (orange)
+Completed  (green)
+Cancelled  (red)
+2. SaaS Web Dashboard (50 Screens)
+Authentication
+
+Login
+
+OTP Login
+
+Forgot Password
+
+Reset Password
+
+Multi-Hospital Selection
+
+Dashboard Screens
+
+Admin Dashboard
+
+Doctor Dashboard
+
+Hospital Analytics Dashboard
+
+Widgets:
+
+Patients Today
+Doctors Active
+Revenue
+Queue Status
+Appointment System
+
+Appointment List
+
+Appointment Calendar
+
+Book Appointment
+
+Reschedule Appointment
+
+Cancel Appointment
+
+Patient Management
+
+Patient List
+
+Patient Profile
+
+Add Patient
+
+Edit Patient
+
+Medical History
+
+Queue System
+
+Doctor Queue Dashboard
+
+Queue Management
+
+Call Next Patient
+
+Skip Patient
+
+Queue History
+
+Consultation
+
+Consultation Screen
+
+Add Diagnosis
+
+Upload Test Report
+
+Prescription Builder
+
+Save Visit
+
+Referral System
+
+Refer Patient
+
+Referral Inbox
+
+Referral History
+
+Doctor Management
+
+Doctors List
+
+Doctor Profile
+
+Doctor Schedule
+
+Doctor Leave Management
+
+Pharmacy Integration
+
+Pharmacy Orders
+
+Prescription Sent
+
+Pharmacy Dashboard
+
+Reports
+
+Reports Overview
+
+Doctor Earnings
+
+Referral Analytics
+
+Patient Growth
+
+System Management
+
+Notification Center
+
+Role Management
+
+Settings
+
+Billing Plans
+
+Admin / Enterprise
+
+Hospital Management
+
+Multi-Hospital Dashboard
+
+API Integration
+
+System Logs
+
+3. Patient Mobile App (30 Screens)
+Authentication
+
+Login
+
+Signup
+
+OTP Verify
+
+Home
+
+Home Dashboard
+
+Next Appointment
+Nearby Hospitals
+Doctors List
+Booking
+
+Find Doctor
+
+Doctor Profile
+
+Select Time Slot
+
+Confirm Appointment
+
+Appointment
+
+Upcoming Visits
+
+Past Visits
+
+Cancel Appointment
+
+Medical Records
+
+Prescriptions
+
+Test Reports
+
+Medical History
+
+Referral
+
+Referral Appointment
+
+Pharmacy
+
+Medicine Orders
+
+Medicine Delivery Tracking
+
+Notifications
+
+Appointment Reminder
+
+Prescription Ready
+
+Account
+
+Profile
+
+Family Members
+
+Insurance Info
+
+Extra
+
+Hospital Map
+
+Doctor Reviews
+
+Health Tips
+
+Support Chat
+
+Payment Screen
+
+Invoice History
+
+Settings
+
+Logout
+
+4. Doctor Tablet UI
+
+Doctors prefer tablet UI for quick consultation.
+
+Main screens:
+
+Doctor Dashboard
+Today's Appointments
+Queue Screen
+Patient Record
+Diagnosis
+Prescription
+Referral
+Reports
+
+Tablet layout:
+
+Left Panel  : Patient list
+Center      : Consultation
+Right Panel : Prescription
+5. Reception POS Screen
+
+Reception works like restaurant POS.
+
+Layout:
+
+---------------------------------
+Search Patient
+
+[Add Walk-in Patient]
+
+---------------------------------
+
+Token | Patient | Doctor | Status
+---------------------------------
+
+101   Ramesh     Dr Shah   Waiting
+102   Amit       Dr Shah   Waiting
+
+Buttons:
+
+Check-in
+Assign Doctor
+Print Token
+6. Hospital Queue Display System
+
+Displayed on TV in waiting area.
+
+Large text layout:
+
+--------------------------------
+
+NOW SERVING
+
+Token 102
+Ramesh Patel
+Cabin 2
+
+--------------------------------
+
+NEXT
+
+Token 103
+Amit Shah
+
+--------------------------------
+Soundbox Integration
+
+When doctor clicks NEXT:
+
+Queue API Trigger
+↓
+IoT Device
+↓
+Speaker Announcement
+
+"Token 102 Ramesh Patel please go to cabin 2"
+Full Product Ecosystem
+
+Your platform becomes:
+
+AI receptionist
+Appointment booking
+Doctor queue system
+Referral network
+Pharmacy integration
+Patient mobile app
+Hospital analytics
+
+This is essentially “POS system for hospitals.”
