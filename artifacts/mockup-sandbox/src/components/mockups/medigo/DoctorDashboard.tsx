@@ -4,7 +4,7 @@ import {
   Clock, 
   Activity, 
   FileText, 
-  Pills, 
+  Pill, 
   CheckCircle2, 
   AlertCircle, 
   Video, 
@@ -292,7 +292,7 @@ export default function DoctorDashboard() {
       <div className="flex-1 min-w-[350px] max-w-[400px] flex flex-col h-full bg-slate-50 border-l border-slate-200 z-0">
         <div className="h-16 border-b border-slate-200 flex items-center px-6 bg-white shrink-0">
           <h2 className="text-lg font-semibold text-slate-800 flex items-center">
-            <Pills className="w-5 h-5 mr-2 text-[#14B8A6]" />
+            <Pill className="w-5 h-5 mr-2 text-[#14B8A6]" />
             Prescription Builder
           </h2>
         </div>
