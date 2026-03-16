@@ -13,6 +13,7 @@ import QueueDisplay from "./pages/admin/queue-display";
 
 import DoctorDashboard from "./pages/doctor/dashboard";
 import DoctorReferrals from "./pages/doctor/referrals";
+import DoctorProfile from "./pages/doctor/profile";
 
 import PatientHome from "./pages/patient/home";
 import PatientBook from "./pages/patient/book";
@@ -48,6 +49,7 @@ function Router() {
       
       <Route path="/doctor/dashboard" component={DoctorDashboard} />
       <Route path="/doctor/referrals" component={DoctorReferrals} />
+      <Route path="/doctor/profile" component={DoctorProfile} />
       
       <Route path="/patient/home" component={PatientHome} />
       <Route path="/patient/book" component={PatientBook} />

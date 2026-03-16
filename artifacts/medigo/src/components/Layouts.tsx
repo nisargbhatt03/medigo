@@ -4,7 +4,7 @@ import {
   LayoutDashboard, Users, Calendar, Stethoscope, 
   MonitorPlay, LogOut, Activity,
   ClipboardList, Search, Bell, Menu, Home,
-  Pill, MapPin, User, X
+  Pill, MapPin, User, X, UserCog
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -131,6 +131,7 @@ export function AppLayout({ children, role }: { children: React.ReactNode, role:
   const doctorItems = [
     { label: "My Dashboard", href: "/doctor/dashboard", icon: LayoutDashboard },
     { label: "My Referrals", href: "/doctor/referrals", icon: Activity },
+    { label: "My Profile", href: "/doctor/profile", icon: UserCog },
   ];
 
   const receptionItems = [
