@@ -10,6 +10,7 @@ export const appointmentsTable = pgTable("appointments", {
   date: text("date").notNull(),
   timeSlot: text("time_slot").notNull(),
   status: text("status").notNull().default("waiting"),
+  caseType: text("case_type").notNull().default("new_case"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

@@ -22,6 +22,10 @@ async function enrichAppointment(a: typeof appointmentsTable.$inferSelect) {
     date: a.date,
     timeSlot: a.timeSlot,
     status: a.status,
+    caseType: (a as any).caseType ?? "new_case",
+    consultationFee: (a as any).caseType === "old_case"
+      ? (doctor?.oldCaseFee ?? 400)
+      : (doctor?.newCaseFee ?? 1000),
     waitTime: a.status === "waiting" ? waitTime : null,
     createdAt: a.createdAt.toISOString(),
   };
@@ -38,7 +42,6 @@ router.get("/appointments", async (req, res): Promise<void> => {
   const today = new Date().toISOString().split("T")[0];
   const filterDate = date === "today" ? today : date;
 
-  let query = db.select().from(appointmentsTable);
   const conditions = [];
   if (filterDate) conditions.push(eq(appointmentsTable.date, filterDate));
   if (doctorId) conditions.push(eq(appointmentsTable.doctorId, parseInt(doctorId, 10)));
@@ -57,7 +60,7 @@ router.get("/appointments", async (req, res): Promise<void> => {
 });
 
 router.post("/appointments", async (req, res): Promise<void> => {
-  const { patientId, doctorId, date, timeSlot } = req.body;
+  const { patientId, doctorId, date, timeSlot, caseType } = req.body;
   if (!patientId || !doctorId || !date || !timeSlot) {
     res.status(400).json({ error: "patientId, doctorId, date, timeSlot required" });
     return;
@@ -75,6 +78,7 @@ router.post("/appointments", async (req, res): Promise<void> => {
     date: today,
     timeSlot,
     status: "waiting",
+    caseType: caseType ?? "new_case",
   }).returning();
 
   const result = await enrichAppointment(appt);
@@ -95,11 +99,12 @@ router.get("/appointments/:id", async (req, res): Promise<void> => {
 router.patch("/appointments/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
-  const { status, doctorId, timeSlot } = req.body;
+  const { status, doctorId, timeSlot, caseType } = req.body;
   const update: Record<string, unknown> = {};
   if (status) update.status = status;
   if (doctorId) update.doctorId = Number(doctorId);
   if (timeSlot) update.timeSlot = timeSlot;
+  if (caseType) update.caseType = caseType;
 
   const [appt] = await db.update(appointmentsTable).set(update).where(eq(appointmentsTable.id, id)).returning();
   if (!appt) {

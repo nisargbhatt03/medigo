@@ -17,6 +17,9 @@ import DoctorReferrals from "./pages/doctor/referrals";
 import PatientHome from "./pages/patient/home";
 import PatientBook from "./pages/patient/book";
 import PatientRecords from "./pages/patient/records";
+import PatientProfile from "./pages/patient/profile";
+import PatientHospitals from "./pages/patient/hospitals";
+import PatientMedicines from "./pages/patient/medicines";
 
 import ReceptionPOS from "./pages/reception/pos";
 
@@ -26,7 +29,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      staleTime: 1000 * 60 * 5, // 5 mins
+      staleTime: 1000 * 60 * 5,
     },
   },
 });
@@ -36,7 +39,6 @@ function Router() {
     <Switch>
       <Route path="/" component={RoleSelector} />
       
-      {/* Admin Routes */}
       <Route path="/admin/dashboard" component={AdminDashboard} />
       <Route path="/admin/patients" component={AdminPatients} />
       <Route path="/admin/appointments" component={AdminAppointments} />
@@ -44,16 +46,16 @@ function Router() {
       <Route path="/admin/referrals" component={AdminReferrals} />
       <Route path="/admin/queue" component={QueueDisplay} />
       
-      {/* Doctor Routes */}
       <Route path="/doctor/dashboard" component={DoctorDashboard} />
       <Route path="/doctor/referrals" component={DoctorReferrals} />
       
-      {/* Patient Routes */}
       <Route path="/patient/home" component={PatientHome} />
       <Route path="/patient/book" component={PatientBook} />
       <Route path="/patient/records" component={PatientRecords} />
+      <Route path="/patient/profile" component={PatientProfile} />
+      <Route path="/patient/hospitals" component={PatientHospitals} />
+      <Route path="/patient/medicines" component={PatientMedicines} />
       
-      {/* Reception Route */}
       <Route path="/reception" component={ReceptionPOS} />
       
       <Route component={NotFound} />

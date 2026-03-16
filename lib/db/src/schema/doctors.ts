@@ -9,6 +9,8 @@ export const doctorsTable = pgTable("doctors", {
   qualification: text("qualification").notNull(),
   cabinNumber: text("cabin_number").notNull(),
   status: text("status").notNull().default("available"),
+  newCaseFee: integer("new_case_fee").notNull().default(1000),
+  oldCaseFee: integer("old_case_fee").notNull().default(400),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

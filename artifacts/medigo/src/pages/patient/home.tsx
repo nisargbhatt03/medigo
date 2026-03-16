@@ -13,7 +13,7 @@ export default function PatientHome() {
             <h1 className="text-2xl font-display font-bold text-foreground">Good Morning,</h1>
             <h2 className="text-xl font-display text-primary font-semibold">Ramesh Patel 👋</h2>
           </div>
-          <div className="relative p-2 bg-white rounded-full shadow-sm">
+          <div className="relative p-2 bg-white rounded-full shadow-sm border border-slate-100">
             <Bell className="w-5 h-5 text-slate-600" />
             <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full"></span>
           </div>
@@ -33,7 +33,9 @@ export default function PatientHome() {
             </div>
           </div>
           <div className="flex gap-3 mt-2">
-            <Button className="flex-1 bg-white text-primary hover:bg-white/90 rounded-xl font-semibold">View Details</Button>
+            <Link href="/patient/records" className="flex-1">
+              <button className="w-full px-4 py-2 bg-white text-primary rounded-xl font-semibold text-sm hover:bg-white/90 transition-colors">View Details</button>
+            </Link>
           </div>
         </div>
 
@@ -55,45 +57,52 @@ export default function PatientHome() {
               <p className="font-semibold text-sm text-slate-800">My Records</p>
             </div>
           </Link>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
-            <div className="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-3">
-              <MapPin className="w-6 h-6" />
+          <Link href="/patient/hospitals">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div className="w-12 h-12 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-3">
+                <MapPin className="w-6 h-6" />
+              </div>
+              <p className="font-semibold text-sm text-slate-800">Hospitals</p>
             </div>
-            <p className="font-semibold text-sm text-slate-800">Hospitals</p>
-          </div>
-          <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center">
-            <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mb-3">
-              <Pill className="w-6 h-6" />
+          </Link>
+          <Link href="/patient/medicines">
+            <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div className="w-12 h-12 bg-orange-50 text-orange-600 rounded-full flex items-center justify-center mb-3">
+                <Pill className="w-6 h-6" />
+              </div>
+              <p className="font-semibold text-sm text-slate-800">Medicines</p>
             </div>
-            <p className="font-semibold text-sm text-slate-800">Medicines</p>
-          </div>
+          </Link>
         </div>
 
         {/* Nearby Doctors */}
         <div>
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-bold text-lg text-slate-800">Top Doctors Nearby</h3>
-            <span className="text-primary text-sm font-semibold flex items-center">See All <ChevronRight className="w-4 h-4" /></span>
+            <Link href="/patient/book">
+              <span className="text-primary text-sm font-semibold flex items-center cursor-pointer">See All <ChevronRight className="w-4 h-4" /></span>
+            </Link>
           </div>
-          <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 mb-3">
-            <img src={`${import.meta.env.BASE_URL}images/avatar-doc.png`} className="w-14 h-14 rounded-full object-cover border-2 border-slate-100" alt="doc" />
-            <div className="flex-1">
-              <p className="font-bold text-slate-800">Dr. Priya Mehta</p>
-              <p className="text-sm text-slate-500">Cardiologist • 2.3 km</p>
-              <div className="flex items-center gap-1 mt-1 text-xs font-semibold text-amber-500">
-                <Star className="w-3 h-3 fill-amber-500" /> 4.8 (120 reviews)
+          <Link href="/patient/book">
+            <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4 mb-3 cursor-pointer hover:shadow-md transition-all active:scale-95">
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-teal-100 flex items-center justify-center text-primary font-display font-bold text-xl border-2 border-slate-100">
+                P
+              </div>
+              <div className="flex-1">
+                <p className="font-bold text-slate-800">Dr. Priya Mehta</p>
+                <p className="text-sm text-slate-500">Cardiologist • 2.3 km</p>
+                <div className="flex items-center gap-1 mt-1 text-xs font-semibold text-amber-500">
+                  <Star className="w-3 h-3 fill-amber-500" /> 4.8 (120 reviews)
+                </div>
+              </div>
+              <div className="text-right">
+                <p className="text-primary font-bold text-sm">₹1,000</p>
+                <p className="text-xs text-slate-400">New Case</p>
               </div>
             </div>
-          </div>
+          </Link>
         </div>
-
       </div>
     </PatientLayout>
-  );
-}
-
-function Button({ children, className, ...props }: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return (
-    <button className={`px-4 py-2 ${className}`} {...props}>{children}</button>
   );
 }

@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db, doctorsTable, appointmentsTable } from "@workspace/db";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 
 const router: IRouter = Router();
 
@@ -21,6 +21,8 @@ router.get("/doctors", async (_req, res): Promise<void> => {
       qualification: d.qualification,
       cabinNumber: d.cabinNumber,
       status: d.status,
+      newCaseFee: d.newCaseFee,
+      oldCaseFee: d.oldCaseFee,
       patientsToday: total,
       waitingCount: waiting,
     };
@@ -37,6 +39,10 @@ router.get("/doctors/:id", async (req, res): Promise<void> => {
     res.status(404).json({ error: "Doctor not found" });
     return;
   }
+  const today = new Date().toISOString().split("T")[0];
+  const appts = await db.select().from(appointmentsTable).where(
+    and(eq(appointmentsTable.doctorId, id), eq(appointmentsTable.date, today))
+  );
   res.json({
     id: doctor.id,
     name: doctor.name,
@@ -44,8 +50,10 @@ router.get("/doctors/:id", async (req, res): Promise<void> => {
     qualification: doctor.qualification,
     cabinNumber: doctor.cabinNumber,
     status: doctor.status,
-    patientsToday: 0,
-    waitingCount: 0,
+    newCaseFee: doctor.newCaseFee,
+    oldCaseFee: doctor.oldCaseFee,
+    patientsToday: appts.length,
+    waitingCount: appts.filter(a => a.status === "waiting").length,
   });
 });
 
