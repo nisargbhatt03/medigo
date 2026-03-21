@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { AppLayout } from "@/components/Layouts";
-import { useListAppointments, useCallNextPatient, useCreatePrescription, getListAppointmentsQueryKey } from "@workspace/api-client-react";
+import { useListAppointments, useCallNextPatient, useCreatePrescription, useListDoctors, getListAppointmentsQueryKey } from "@workspace/api-client-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,11 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { ChevronRight, Pill, Phone, Activity, Stethoscope, AlertCircle, X, Plus } from "lucide-react";
+import { ChevronRight, Pill, Activity, Stethoscope, X, Plus, Send, ChevronDown, ChevronUp } from "lucide-react";
+
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 export default function DoctorDashboard() {
-  // Hardcoded to doctor 1 for demo
   const { data: queue = [], isLoading } = useListAppointments({ doctorId: 1, date: new Date().toISOString().split('T')[0] });
+  const { data: doctors = [] } = useListDoctors();
   const callNext = useCallNextPatient();
   const createPrescription = useCreatePrescription();
   const queryClient = useQueryClient();
@@ -24,8 +26,16 @@ export default function DoctorDashboard() {
   const [instructions, setInstructions] = useState("");
   const [sendToPharmacy, setSendToPharmacy] = useState(true);
 
+  const [showReferral, setShowReferral] = useState(false);
+  const [referDoctorId, setReferDoctorId] = useState("");
+  const [referUrgency, setReferUrgency] = useState("normal");
+  const [referReason, setReferReason] = useState("");
+  const [referLoading, setReferLoading] = useState(false);
+
   const activePatient = queue.find(q => q.status === "in-consultation");
-  
+  const otherDoctors = doctors.filter(d => d.id !== 1);
+  const selectedDoctor = otherDoctors.find(d => String(d.id) === referDoctorId);
+
   const handleCallNext = () => {
     callNext.mutate({ data: { doctorId: 1 } }, {
       onSuccess: () => {
@@ -37,7 +47,6 @@ export default function DoctorDashboard() {
 
   const handleSavePrescription = () => {
     if (!activePatient) return;
-    
     createPrescription.mutate({
       data: {
         patientId: activePatient.patientId,
@@ -58,10 +67,41 @@ export default function DoctorDashboard() {
     });
   };
 
+  const handleSendReferral = async () => {
+    if (!activePatient || !referDoctorId || !referReason.trim()) return;
+    setReferLoading(true);
+    try {
+      const r = await fetch(`${BASE}/api/referrals`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId: activePatient.patientId,
+          fromDoctorId: 1,
+          toDoctorId: Number(referDoctorId),
+          reason: referReason.trim(),
+          urgency: referUrgency,
+        }),
+      });
+      if (!r.ok) throw new Error("Failed");
+      toast({
+        title: "Referral sent!",
+        description: `${activePatient.patientName} referred to ${selectedDoctor?.name}`,
+      });
+      setShowReferral(false);
+      setReferDoctorId("");
+      setReferReason("");
+      setReferUrgency("normal");
+    } catch {
+      toast({ title: "Failed to send referral", variant: "destructive" });
+    } finally {
+      setReferLoading(false);
+    }
+  };
+
   return (
     <AppLayout role="doctor">
       <div className="flex h-full w-full bg-slate-50 font-sans min-w-max">
-        
+
         {/* LEFT PANEL - Queue */}
         <div className="w-80 flex-shrink-0 bg-slate-900 text-white flex flex-col h-full border-r border-slate-800 shadow-xl z-10">
           <div className="p-6 border-b border-slate-800">
@@ -89,14 +129,14 @@ export default function DoctorDashboard() {
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Queue</h3>
               <Badge variant="outline" className="border-slate-700 text-slate-400">{queue.length} total</Badge>
             </div>
-            
+
             <div className="space-y-2">
               {queue.map(patient => (
-                <div 
-                  key={patient.id} 
+                <div
+                  key={patient.id}
                   className={`p-3 rounded-xl flex items-center justify-between cursor-pointer transition-all ${
-                    patient.status === 'in-consultation' 
-                      ? 'bg-primary shadow-lg shadow-primary/20 ring-1 ring-primary ring-offset-2 ring-offset-slate-900' 
+                    patient.status === 'in-consultation'
+                      ? 'bg-primary shadow-lg shadow-primary/20 ring-1 ring-primary ring-offset-2 ring-offset-slate-900'
                       : patient.status === 'completed'
                       ? 'bg-slate-800/50 border border-slate-800 opacity-50'
                       : 'bg-slate-800 hover:bg-slate-700 border border-slate-700'
@@ -124,7 +164,7 @@ export default function DoctorDashboard() {
           </div>
 
           <div className="p-4 border-t border-slate-800 bg-slate-900/95 backdrop-blur">
-            <Button 
+            <Button
               onClick={handleCallNext}
               disabled={callNext.isPending}
               className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl h-12"
@@ -139,8 +179,8 @@ export default function DoctorDashboard() {
           <div className="flex-1 flex flex-col h-full border-r border-border bg-background z-0">
             <div className="h-16 border-b border-border flex items-center justify-between px-6 bg-card shrink-0 shadow-sm">
               <h1 className="text-lg font-semibold flex items-center font-display">
-                Current Consultation 
-                <span className="mx-3 text-muted-foreground">|</span> 
+                Current Consultation
+                <span className="mx-3 text-muted-foreground">|</span>
                 <span className="text-primary">{activePatient.patientName}</span>
               </h1>
               <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 text-sm py-1 px-3">
@@ -177,9 +217,9 @@ export default function DoctorDashboard() {
                 <h4 className="text-sm font-bold text-foreground mb-4 flex items-center uppercase tracking-wide">
                   <Stethoscope className="w-4 h-4 mr-2 text-primary" /> Clinical Diagnosis
                 </h4>
-                <Textarea 
+                <Textarea
                   value={diagnosis}
-                  onChange={(e) => setDiagnosis(e.target.value)}
+                  onChange={e => setDiagnosis(e.target.value)}
                   className="min-h-[200px] resize-none border-border bg-card rounded-xl p-4 focus-visible:ring-primary text-base shadow-sm"
                   placeholder="Enter clinical observations, chief complaints, and final diagnosis..."
                 />
@@ -209,53 +249,53 @@ export default function DoctorDashboard() {
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-sm font-bold uppercase tracking-wide text-foreground">Rx Medications</h3>
               </div>
-              
+
               <div className="space-y-3">
                 {medicines.map((med, idx) => (
                   <div key={idx} className="bg-card border rounded-xl p-4 shadow-sm relative group">
-                    <button 
+                    <button
                       onClick={() => setMedicines(medicines.filter((_, i) => i !== idx))}
                       className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-destructive opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <X className="w-4 h-4" />
                     </button>
-                    <Input 
-                      placeholder="Medicine Name (e.g. Paracetamol 500mg)" 
+                    <Input
+                      placeholder="Medicine Name (e.g. Paracetamol 500mg)"
                       value={med.name}
-                      onChange={(e) => {
+                      onChange={e => {
                         const newMeds = [...medicines];
                         newMeds[idx].name = e.target.value;
                         setMedicines(newMeds);
                       }}
-                      className="mb-2 h-8 text-sm font-medium border-transparent bg-muted/50 focus-visible:bg-background" 
+                      className="mb-2 h-8 text-sm font-medium border-transparent bg-muted/50 focus-visible:bg-background"
                     />
                     <div className="flex gap-2">
-                      <Input 
-                        placeholder="Dosage (1-0-1)" 
+                      <Input
+                        placeholder="Dosage (1-0-1)"
                         value={med.dosage}
-                        onChange={(e) => {
+                        onChange={e => {
                           const newMeds = [...medicines];
                           newMeds[idx].dosage = e.target.value;
                           setMedicines(newMeds);
                         }}
-                        className="flex-1 h-8 text-xs border-transparent bg-muted/50 focus-visible:bg-background" 
+                        className="flex-1 h-8 text-xs border-transparent bg-muted/50 focus-visible:bg-background"
                       />
-                      <Input 
-                        placeholder="Days" 
+                      <Input
+                        placeholder="Days"
                         value={med.duration}
-                        onChange={(e) => {
+                        onChange={e => {
                           const newMeds = [...medicines];
                           newMeds[idx].duration = e.target.value;
                           setMedicines(newMeds);
                         }}
-                        className="w-20 h-8 text-xs border-transparent bg-muted/50 focus-visible:bg-background" 
+                        className="w-20 h-8 text-xs border-transparent bg-muted/50 focus-visible:bg-background"
                       />
                     </div>
                   </div>
                 ))}
-                
-                <Button 
-                  variant="outline" 
+
+                <Button
+                  variant="outline"
                   onClick={() => setMedicines([...medicines, { name: "", dosage: "", duration: "" }])}
                   className="w-full border-dashed rounded-xl h-10 text-primary hover:text-primary hover:bg-primary/5"
                 >
@@ -266,9 +306,9 @@ export default function DoctorDashboard() {
 
             <div className={!activePatient ? 'opacity-50 pointer-events-none' : ''}>
               <h3 className="text-sm font-bold uppercase tracking-wide text-foreground mb-3">Instructions</h3>
-              <Textarea 
+              <Textarea
                 value={instructions}
-                onChange={(e) => setInstructions(e.target.value)}
+                onChange={e => setInstructions(e.target.value)}
                 className="resize-none rounded-xl bg-card border shadow-sm text-sm h-20"
                 placeholder="Diet, rest, follow-up advice..."
               />
@@ -283,14 +323,115 @@ export default function DoctorDashboard() {
             </div>
           </div>
 
-          <div className="p-6 bg-card border-t border-border shrink-0">
-            <Button 
-              onClick={handleSavePrescription}
-              disabled={createPrescription.isPending || !activePatient}
-              className="w-full bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl h-12 shadow-lg shadow-primary/20"
-            >
-              {createPrescription.isPending ? "Saving..." : "Complete & Save"}
-            </Button>
+          {/* FOOTER: Referral + Save */}
+          <div className="bg-card border-t border-border shrink-0">
+
+            {/* Inline referral form — expands above the buttons */}
+            {showReferral && (
+              <div className="p-4 border-b border-border bg-teal-50/60 space-y-3">
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-xs font-bold uppercase tracking-wide text-teal-700 flex items-center gap-1.5">
+                    <Send className="w-3.5 h-3.5" /> Refer {activePatient?.patientName ?? "Patient"} To
+                  </p>
+                  <button onClick={() => setShowReferral(false)} className="text-teal-600 hover:text-teal-800">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+
+                {/* Doctor select */}
+                <select
+                  value={referDoctorId}
+                  onChange={e => setReferDoctorId(e.target.value)}
+                  className="w-full rounded-xl border border-teal-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400"
+                >
+                  <option value="">Select specialist...</option>
+                  {otherDoctors.map(d => (
+                    <option key={d.id} value={d.id}>
+                      {d.name} — {d.specialty}
+                    </option>
+                  ))}
+                </select>
+
+                {selectedDoctor && (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white rounded-lg border border-teal-100 text-xs">
+                    <span className={`w-2 h-2 rounded-full ${
+                      selectedDoctor.status === "available" ? "bg-green-500" :
+                      selectedDoctor.status === "busy" ? "bg-blue-500" :
+                      selectedDoctor.status === "break" ? "bg-yellow-500" : "bg-slate-400"
+                    }`} />
+                    <span className="font-medium text-teal-700">{selectedDoctor.name}</span>
+                    <span className="text-slate-400">· {selectedDoctor.specialty}</span>
+                    <span className="ml-auto capitalize text-slate-500">{selectedDoctor.status}</span>
+                  </div>
+                )}
+
+                {/* Priority */}
+                <div className="flex gap-2">
+                  {[
+                    { val: "low", label: "Low", cls: "bg-slate-500" },
+                    { val: "normal", label: "Normal", cls: "bg-blue-500" },
+                    { val: "high", label: "Urgent", cls: "bg-red-500" },
+                  ].map(u => (
+                    <button
+                      key={u.val}
+                      onClick={() => setReferUrgency(u.val)}
+                      className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border-2 transition-all ${
+                        referUrgency === u.val
+                          ? `${u.cls} border-transparent text-white`
+                          : "bg-white border-teal-200 text-slate-500 hover:border-teal-400"
+                      }`}
+                    >
+                      {u.label}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Reason */}
+                <textarea
+                  value={referReason}
+                  onChange={e => setReferReason(e.target.value)}
+                  placeholder="Reason for referral / clinical notes..."
+                  rows={2}
+                  className="w-full rounded-xl border border-teal-200 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-teal-400 resize-none"
+                />
+
+                <Button
+                  onClick={handleSendReferral}
+                  disabled={referLoading || !referDoctorId || !referReason.trim() || !activePatient}
+                  className="w-full bg-teal-600 hover:bg-teal-700 text-white rounded-xl h-9 text-sm font-semibold"
+                >
+                  {referLoading ? "Sending..." : "Send Referral"}
+                </Button>
+              </div>
+            )}
+
+            {/* Action buttons row */}
+            <div className="p-4 flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowReferral(v => !v)}
+                disabled={!activePatient}
+                className={`flex-1 rounded-xl h-12 font-semibold border-2 transition-all ${
+                  showReferral
+                    ? "border-teal-500 bg-teal-50 text-teal-700 hover:bg-teal-100"
+                    : "border-teal-300 text-teal-700 hover:border-teal-500 hover:bg-teal-50"
+                }`}
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Refer
+                {showReferral
+                  ? <ChevronDown className="w-3.5 h-3.5 ml-1.5" />
+                  : <ChevronUp className="w-3.5 h-3.5 ml-1.5" />}
+              </Button>
+
+              <Button
+                onClick={handleSavePrescription}
+                disabled={createPrescription.isPending || !activePatient}
+                className="flex-1 bg-primary hover:bg-primary/90 text-white font-semibold rounded-xl h-12 shadow-lg shadow-primary/20"
+              >
+                {createPrescription.isPending ? "Saving..." : "Complete & Save"}
+              </Button>
+            </div>
           </div>
         </div>
 
