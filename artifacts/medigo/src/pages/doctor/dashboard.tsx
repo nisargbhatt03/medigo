@@ -71,7 +71,10 @@ export default function DoctorDashboard() {
     if (!activePatient || !referDoctorId || !referReason.trim()) return;
     setReferLoading(true);
     try {
-      const r = await fetch(`${BASE}/api/referrals`, {
+      const today = new Date().toISOString().split("T")[0];
+
+      // 1. Create the referral record
+      const refRes = await fetch(`${BASE}/api/referrals`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -82,10 +85,37 @@ export default function DoctorDashboard() {
           urgency: referUrgency,
         }),
       });
-      if (!r.ok) throw new Error("Failed");
+      if (!refRes.ok) throw new Error("Referral failed");
+
+      // 2. Mark the current appointment as completed for this doctor
+      await fetch(`${BASE}/api/appointments/${activePatient.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "completed" }),
+      });
+
+      // 3. Add patient to the referred doctor's queue (new appointment today)
+      const hour = new Date().getHours();
+      const min = new Date().getMinutes();
+      const timeSlot = `${String(hour).padStart(2, "0")}:${String(min).padStart(2, "0")}`;
+      await fetch(`${BASE}/api/appointments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          patientId: activePatient.patientId,
+          doctorId: Number(referDoctorId),
+          date: today,
+          timeSlot,
+          caseType: "new_case",
+        }),
+      });
+
+      // 4. Refresh local queue
+      queryClient.invalidateQueries({ queryKey: getListAppointmentsQueryKey() });
+
       toast({
-        title: "Referral sent!",
-        description: `${activePatient.patientName} referred to ${selectedDoctor?.name}`,
+        title: "Patient referred & completed",
+        description: `${activePatient.patientName} added to ${selectedDoctor?.name}'s queue`,
       });
       setShowReferral(false);
       setReferDoctorId("");
