@@ -13,7 +13,7 @@ import { Stethoscope, User, Clock, Plus, Pencil, Trash2, IndianRupee, AlertTrian
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-type DoctorForm = {
+type DoctorFormData = {
   name: string;
   specialty: string;
   qualification: string;
@@ -23,7 +23,7 @@ type DoctorForm = {
   status: string;
 };
 
-const EMPTY_FORM: DoctorForm = {
+const EMPTY_FORM: DoctorFormData = {
   name: "",
   specialty: "",
   qualification: "",
@@ -47,6 +47,112 @@ const STATUS_LABELS: Record<string, string> = {
   offline: "Offline",
 };
 
+function DoctorFormFields({
+  form,
+  onChange,
+  onSubmit,
+  loading,
+}: {
+  form: DoctorFormData;
+  onChange: (k: keyof DoctorFormData, v: string) => void;
+  onSubmit: () => void;
+  loading: boolean;
+}) {
+  return (
+    <div className="space-y-4 mt-2">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-2 space-y-1.5">
+          <Label>Full Name *</Label>
+          <Input
+            value={form.name}
+            onChange={e => onChange("name", e.target.value)}
+            placeholder="Dr. Ramesh Sharma"
+            className="rounded-xl"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Specialty *</Label>
+          <select
+            value={form.specialty}
+            onChange={e => onChange("specialty", e.target.value)}
+            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="">Select...</option>
+            {["General Physician","Cardiology","Orthopedics","Dermatology","Neurology","Gynecology","Pediatrics","ENT","Ophthalmology","Psychiatry"].map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Qualification *</Label>
+          <Input
+            value={form.qualification}
+            onChange={e => onChange("qualification", e.target.value)}
+            placeholder="MBBS, MD"
+            className="rounded-xl"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Cabin Number *</Label>
+          <Input
+            value={form.cabinNumber}
+            onChange={e => onChange("cabinNumber", e.target.value)}
+            placeholder="Cabin 5"
+            className="rounded-xl"
+          />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Status</Label>
+          <select
+            value={form.status}
+            onChange={e => onChange("status", e.target.value)}
+            className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+          >
+            <option value="available">Available</option>
+            <option value="busy">Busy</option>
+            <option value="break">On Break</option>
+            <option value="offline">Offline</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="bg-slate-50 rounded-xl p-4 border">
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">Consultation Fees</p>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <Label className="flex items-center gap-1.5 text-blue-700"><IndianRupee className="w-3.5 h-3.5" />New Case Fee</Label>
+            <Input
+              type="number"
+              value={form.newCaseFee}
+              onChange={e => onChange("newCaseFee", e.target.value)}
+              placeholder="1000"
+              className="rounded-xl"
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="flex items-center gap-1.5 text-teal-700"><IndianRupee className="w-3.5 h-3.5" />Old Case Fee</Label>
+            <Input
+              type="number"
+              value={form.oldCaseFee}
+              onChange={e => onChange("oldCaseFee", e.target.value)}
+              placeholder="400"
+              className="rounded-xl"
+            />
+          </div>
+        </div>
+      </div>
+
+      <Button
+        onClick={onSubmit}
+        disabled={loading || !form.name || !form.specialty || !form.qualification || !form.cabinNumber}
+        className="w-full rounded-xl mt-2"
+      >
+        {loading ? "Saving..." : "Save Doctor"}
+      </Button>
+    </div>
+  );
+}
+
 export default function AdminDoctors() {
   const { data: doctors = [], isLoading } = useListDoctors();
   const queryClient = useQueryClient();
@@ -55,14 +161,13 @@ export default function AdminDoctors() {
   const [addOpen, setAddOpen] = useState(false);
   const [editDoc, setEditDoc] = useState<(typeof doctors[0] & { id: number }) | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  const [form, setForm] = useState<DoctorForm>(EMPTY_FORM);
+  const [form, setForm] = useState<DoctorFormData>(EMPTY_FORM);
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
-  const setField = (k: keyof DoctorForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
-    setForm(f => ({ ...f, [k]: e.target.value }));
+  const setField = (k: keyof DoctorFormData, v: string) => setForm(f => ({ ...f, [k]: v }));
 
   const createDoctor = useMutation({
-    mutationFn: async (data: DoctorForm) => {
+    mutationFn: async (data: DoctorFormData) => {
       const r = await fetch(`${BASE}/api/doctors`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -80,7 +185,7 @@ export default function AdminDoctors() {
   });
 
   const updateDoctor = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: DoctorForm }) => {
+    mutationFn: async ({ id, data }: { id: number; data: DoctorFormData }) => {
       const r = await fetch(`${BASE}/api/doctors/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -122,65 +227,6 @@ export default function AdminDoctors() {
     setEditDoc(doc as any);
   };
 
-  const DoctorForm = ({ onSubmit, loading }: { onSubmit: () => void; loading: boolean }) => (
-    <div className="space-y-4 mt-2">
-      <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-2 space-y-1.5">
-          <Label>Full Name *</Label>
-          <Input value={form.name} onChange={setField("name")} placeholder="Dr. Ramesh Sharma" className="rounded-xl" />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Specialty *</Label>
-          <select value={form.specialty} onChange={setField("specialty")} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-            <option value="">Select...</option>
-            {["General Physician","Cardiology","Orthopedics","Dermatology","Neurology","Gynecology","Pediatrics","ENT","Ophthalmology","Psychiatry"].map(s => (
-              <option key={s} value={s}>{s}</option>
-            ))}
-          </select>
-        </div>
-        <div className="space-y-1.5">
-          <Label>Qualification *</Label>
-          <Input value={form.qualification} onChange={setField("qualification")} placeholder="MBBS, MD" className="rounded-xl" />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Cabin Number *</Label>
-          <Input value={form.cabinNumber} onChange={setField("cabinNumber")} placeholder="Cabin 5" className="rounded-xl" />
-        </div>
-        <div className="space-y-1.5">
-          <Label>Status</Label>
-          <select value={form.status} onChange={setField("status")} className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
-            <option value="available">Available</option>
-            <option value="busy">Busy</option>
-            <option value="break">On Break</option>
-            <option value="offline">Offline</option>
-          </select>
-        </div>
-      </div>
-
-      <div className="bg-slate-50 rounded-xl p-4 border">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">Consultation Fees</p>
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-1.5">
-            <Label className="flex items-center gap-1.5 text-blue-700"><IndianRupee className="w-3.5 h-3.5" />New Case Fee</Label>
-            <Input type="number" value={form.newCaseFee} onChange={setField("newCaseFee")} placeholder="1000" className="rounded-xl" />
-          </div>
-          <div className="space-y-1.5">
-            <Label className="flex items-center gap-1.5 text-teal-700"><IndianRupee className="w-3.5 h-3.5" />Old Case Fee</Label>
-            <Input type="number" value={form.oldCaseFee} onChange={setField("oldCaseFee")} placeholder="400" className="rounded-xl" />
-          </div>
-        </div>
-      </div>
-
-      <Button
-        onClick={onSubmit}
-        disabled={loading || !form.name || !form.specialty || !form.qualification || !form.cabinNumber}
-        className="w-full rounded-xl mt-2"
-      >
-        {loading ? "Saving..." : "Save Doctor"}
-      </Button>
-    </div>
-  );
-
   return (
     <AppLayout role="admin">
       <div className="p-4 md:p-8 max-w-7xl mx-auto">
@@ -189,9 +235,9 @@ export default function AdminDoctors() {
             <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground">Medical Staff</h1>
             <p className="text-muted-foreground mt-1">Manage hospital doctors and their availability.</p>
           </div>
-          <Dialog open={addOpen} onOpenChange={setAddOpen}>
+          <Dialog open={addOpen} onOpenChange={open => { setAddOpen(open); if (open) setForm(EMPTY_FORM); }}>
             <DialogTrigger asChild>
-              <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-primary/20" onClick={() => setForm(EMPTY_FORM)}>
+              <Button className="bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-primary/20">
                 <Plus className="w-5 h-5 mr-2" /> Add Doctor
               </Button>
             </DialogTrigger>
@@ -199,7 +245,12 @@ export default function AdminDoctors() {
               <DialogHeader>
                 <DialogTitle className="text-xl font-display">Add New Doctor</DialogTitle>
               </DialogHeader>
-              <DoctorForm onSubmit={() => createDoctor.mutate(form)} loading={createDoctor.isPending} />
+              <DoctorFormFields
+                form={form}
+                onChange={setField}
+                onSubmit={() => createDoctor.mutate(form)}
+                loading={createDoctor.isPending}
+              />
             </DialogContent>
           </Dialog>
         </div>
@@ -329,7 +380,9 @@ export default function AdminDoctors() {
           <DialogHeader>
             <DialogTitle className="text-xl font-display">Edit Doctor</DialogTitle>
           </DialogHeader>
-          <DoctorForm
+          <DoctorFormFields
+            form={form}
+            onChange={setField}
             onSubmit={() => editDoc && updateDoctor.mutate({ id: editDoc.id, data: form })}
             loading={updateDoctor.isPending}
           />
