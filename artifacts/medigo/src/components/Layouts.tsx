@@ -176,7 +176,7 @@ export function AppLayout({ children, role }: { children: React.ReactNode, role:
             <span className="text-white font-semibold">Doctor Portal</span>
           </div>
         )}
-        <main className="flex-1 overflow-y-auto custom-scrollbar">
+        <main className="flex-1 overflow-auto custom-scrollbar">
           {children}
         </main>
 

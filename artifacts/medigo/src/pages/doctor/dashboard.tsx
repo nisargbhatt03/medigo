@@ -60,7 +60,7 @@ export default function DoctorDashboard() {
 
   return (
     <AppLayout role="doctor">
-      <div className="flex h-full w-full bg-slate-50 overflow-hidden font-sans">
+      <div className="flex h-full w-full bg-slate-50 font-sans min-w-max">
         
         {/* LEFT PANEL - Queue */}
         <div className="w-80 flex-shrink-0 bg-slate-900 text-white flex flex-col h-full border-r border-slate-800 shadow-xl z-10">
