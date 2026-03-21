@@ -23,6 +23,7 @@ import PatientHospitals from "./pages/patient/hospitals";
 import PatientMedicines from "./pages/patient/medicines";
 
 import ReceptionPOS from "./pages/reception/pos";
+import ReceptionAppointments from "./pages/reception/appointments";
 
 import NotFound from "@/pages/not-found";
 
@@ -59,6 +60,7 @@ function Router() {
       <Route path="/patient/medicines" component={PatientMedicines} />
       
       <Route path="/reception" component={ReceptionPOS} />
+      <Route path="/reception/appointments" component={ReceptionAppointments} />
       
       <Route component={NotFound} />
     </Switch>

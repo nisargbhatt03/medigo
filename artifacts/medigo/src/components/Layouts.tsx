@@ -136,7 +136,7 @@ export function AppLayout({ children, role }: { children: React.ReactNode, role:
 
   const receptionItems = [
     { label: "Point of Sale", href: "/reception", icon: MonitorPlay },
-    { label: "Appointments", href: "/admin/appointments", icon: Calendar },
+    { label: "Appointments", href: "/reception/appointments", icon: Calendar },
   ];
 
   const getItems = () => {
