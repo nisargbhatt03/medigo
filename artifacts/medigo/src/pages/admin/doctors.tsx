@@ -56,6 +56,7 @@ export default function AdminDoctors() {
   const [editDoc, setEditDoc] = useState<(typeof doctors[0] & { id: number }) | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [form, setForm] = useState<DoctorForm>(EMPTY_FORM);
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
 
   const setField = (k: keyof DoctorForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setForm(f => ({ ...f, [k]: e.target.value }));
@@ -203,20 +204,52 @@ export default function AdminDoctors() {
           </Dialog>
         </div>
 
-        {/* Stats row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        {/* Stats row — clickable filters */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {[
-            { label: "Total Doctors", value: doctors.length, color: "text-blue-600", bg: "bg-blue-50" },
-            { label: "Available", value: doctors.filter(d => d.status === "available").length, color: "text-green-600", bg: "bg-green-50" },
-            { label: "Busy", value: doctors.filter(d => d.status === "busy").length, color: "text-blue-600", bg: "bg-blue-50" },
-            { label: "On Break", value: doctors.filter(d => d.status === "break").length, color: "text-yellow-600", bg: "bg-yellow-50" },
-          ].map(s => (
-            <div key={s.label} className="bg-card border rounded-xl p-4 shadow-sm">
-              <p className="text-xs text-muted-foreground font-medium">{s.label}</p>
-              <p className={`text-2xl font-display font-bold mt-1 ${s.color}`}>{s.value}</p>
-            </div>
-          ))}
+            { label: "Total Doctors", value: doctors.length, filter: null, color: "text-blue-600", activeBg: "bg-blue-600", activeRing: "ring-blue-300", dot: "bg-blue-500" },
+            { label: "Available", value: doctors.filter(d => d.status === "available").length, filter: "available", color: "text-green-600", activeBg: "bg-green-600", activeRing: "ring-green-300", dot: "bg-green-500" },
+            { label: "Busy", value: doctors.filter(d => d.status === "busy").length, filter: "busy", color: "text-blue-600", activeBg: "bg-blue-700", activeRing: "ring-blue-300", dot: "bg-blue-500" },
+            { label: "On Break", value: doctors.filter(d => d.status === "break").length, filter: "break", color: "text-yellow-600", activeBg: "bg-yellow-500", activeRing: "ring-yellow-300", dot: "bg-yellow-500" },
+          ].map(s => {
+            const isActive = s.filter !== null && statusFilter === s.filter;
+            return (
+              <button
+                key={s.label}
+                onClick={() => setStatusFilter(isActive ? null : s.filter)}
+                className={`text-left rounded-xl p-4 border-2 shadow-sm transition-all cursor-pointer focus:outline-none ${
+                  isActive
+                    ? `${s.activeBg} border-transparent ring-2 ${s.activeRing} shadow-lg`
+                    : "bg-card border-border hover:border-primary/40 hover:shadow-md"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1">
+                  <p className={`text-xs font-semibold ${isActive ? "text-white/80" : "text-muted-foreground"}`}>{s.label}</p>
+                  {s.filter && <span className={`w-2.5 h-2.5 rounded-full ${isActive ? "bg-white/60" : s.dot}`}></span>}
+                </div>
+                <p className={`text-2xl font-display font-bold ${isActive ? "text-white" : s.color}`}>{s.value}</p>
+                {isActive && <p className="text-[10px] text-white/70 mt-1 font-medium">Click to clear filter</p>}
+                {!s.filter && statusFilter && <p className="text-[10px] text-primary mt-1 font-semibold">Show all</p>}
+              </button>
+            );
+          })}
         </div>
+
+        {/* Active filter banner */}
+        {statusFilter && (
+          <div className="flex items-center justify-between mb-5 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3">
+            <p className="text-sm font-medium text-primary">
+              Showing <span className="font-bold capitalize">{STATUS_LABELS[statusFilter]}</span> doctors
+              {" "}({doctors.filter(d => d.status === statusFilter).length} of {doctors.length})
+            </p>
+            <button
+              onClick={() => setStatusFilter(null)}
+              className="text-xs text-primary font-bold underline underline-offset-2 hover:text-primary/70 transition-colors"
+            >
+              Clear Filter
+            </button>
+          </div>
+        )}
 
         {isLoading ? (
           <div className="flex justify-center p-12">
@@ -229,7 +262,7 @@ export default function AdminDoctors() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {doctors.map(doctor => (
+            {(statusFilter ? doctors.filter(d => d.status === statusFilter) : doctors).map(doctor => (
               <div key={doctor.id} className="bg-card rounded-2xl border p-6 shadow-sm hover:shadow-lg transition-all group relative">
                 {/* Action buttons */}
                 <div className="absolute top-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
