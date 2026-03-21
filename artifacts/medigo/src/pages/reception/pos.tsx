@@ -54,7 +54,7 @@ export default function ReceptionPOS() {
 
   return (
     <AppLayout role="reception">
-      <div className="flex h-full w-full bg-slate-100 overflow-hidden font-sans">
+      <div className="flex h-full w-full bg-slate-100 font-sans min-w-max">
         
         {/* LEFT PANEL - Action Area */}
         <div className="w-[420px] bg-white border-r border-border flex flex-col shadow-sm z-10">
