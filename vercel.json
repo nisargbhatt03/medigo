@@ -1,6 +1,6 @@
 {
   "buildCommand": "pnpm run build",
-  "outputDirectory": "artifacts/medigo/dist/public",
+  "outputDirectory": "public",
   "rewrites": [
     {
       "source": "/api/(.*)",
