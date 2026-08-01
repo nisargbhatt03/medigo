@@ -1,14 +1,14 @@
-import { Router, type IRouter } from "express";
-import healthRouter from "./health";
-import patientsRouter from "./patients";
-import doctorsRouter from "./doctors";
-import appointmentsRouter from "./appointments";
-import queueRouter from "./queue";
-import prescriptionsRouter from "./prescriptions";
-import referralsRouter from "./referrals";
-import statsRouter from "./stats";
+import { Router } from "express";
+import healthRouter from "./health.js";
+import patientsRouter from "./patients.js";
+import doctorsRouter from "./doctors.js";
+import appointmentsRouter from "./appointments.js";
+import queueRouter from "./queue.js";
+import prescriptionsRouter from "./prescriptions.js";
+import referralsRouter from "./referrals.js";
+import statsRouter from "./stats.js";
 
-const router: IRouter = Router();
+const router = Router();
 
 router.use(healthRouter);
 router.use(patientsRouter);
