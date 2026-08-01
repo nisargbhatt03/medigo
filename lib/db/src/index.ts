@@ -7,7 +7,7 @@ import * as schema from "./schema";
 const { Pool } = pg;
 
 if (!process.env.DATABASE_URL) {
-  const envPath = path.resolve(import.meta.dirname, "../../../.env");
+  const envPath = path.resolve(__dirname, "../../../.env");
   if (fs.existsSync(envPath)) {
     const envContent = fs.readFileSync(envPath, "utf-8");
     const match = envContent.match(/DATABASE_URL=(.+)/);

@@ -1,5 +1,5 @@
 {
-  "buildCommand": "pnpm --filter @workspace/medigo run build",
+  "buildCommand": "pnpm run build",
   "outputDirectory": "artifacts/medigo/dist/public",
   "rewrites": [
     {

@@ -19,7 +19,7 @@ const PATIENT = {
 };
 
 export default function PatientProfile() {
-  const { data: appointments = [] } = useListAppointments({ patientId: "1" });
+  const { data: appointments = [] } = useListAppointments();
   const { data: prescriptions = [] } = useGetPatientPrescriptions(1);
 
   const completed = appointments.filter(a => a.status === "completed").length;
