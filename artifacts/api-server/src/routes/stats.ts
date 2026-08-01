@@ -1,8 +1,7 @@
-import { Router, type IRouter } from "express";
-import { db, appointmentsTable, doctorsTable } from "@workspace/db";
-import { eq, and } from "drizzle-orm";
+import { Router } from "express";
+import { db, appointmentsTable, doctorsTable, eq } from "@workspace/db";
 
-const router: IRouter = Router();
+const router = Router();
 
 router.get("/stats/dashboard", async (_req, res): Promise<void> => {
   const today = new Date().toISOString().split("T")[0];

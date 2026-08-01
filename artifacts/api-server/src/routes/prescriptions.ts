@@ -1,8 +1,7 @@
-import { Router, type IRouter } from "express";
-import { db, prescriptionsTable, patientsTable, doctorsTable } from "@workspace/db";
-import { eq } from "drizzle-orm";
+import { Router } from "express";
+import { db, prescriptionsTable, patientsTable, doctorsTable, eq } from "@workspace/db";
 
-const router: IRouter = Router();
+const router = Router();
 
 async function enrichPrescription(p: typeof prescriptionsTable.$inferSelect) {
   const [patient] = await db.select().from(patientsTable).where(eq(patientsTable.id, p.patientId));

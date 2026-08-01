@@ -1,8 +1,7 @@
-import { Router, type IRouter } from "express";
-import { db, patientsTable } from "@workspace/db";
-import { ilike, or } from "drizzle-orm";
+import { Router } from "express";
+import { db, patientsTable, ilike, or, eq } from "@workspace/db";
 
-const router: IRouter = Router();
+const router = Router();
 
 router.get("/patients", async (req, res): Promise<void> => {
   const { search } = req.query as { search?: string };
@@ -52,7 +51,6 @@ router.post("/patients", async (req, res): Promise<void> => {
 router.get("/patients/:id", async (req, res): Promise<void> => {
   const raw = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
   const id = parseInt(raw, 10);
-  const { eq } = await import("drizzle-orm");
   const [patient] = await db.select().from(patientsTable).where(eq(patientsTable.id, id));
   if (!patient) {
     res.status(404).json({ error: "Patient not found" });

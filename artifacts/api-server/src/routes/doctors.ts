@@ -1,8 +1,7 @@
-import { Router, type IRouter } from "express";
-import { db, doctorsTable, appointmentsTable } from "@workspace/db";
-import { eq, and } from "drizzle-orm";
+import { Router } from "express";
+import { db, doctorsTable, appointmentsTable, eq, and } from "@workspace/db";
 
-const router: IRouter = Router();
+const router = Router();
 
 async function enrichDoctor(d: typeof doctorsTable.$inferSelect, today: string) {
   const appts = await db.select().from(appointmentsTable).where(
@@ -49,7 +48,8 @@ router.post("/doctors", async (req, res): Promise<void> => {
 });
 
 router.get("/doctors/:id", async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(rawId, 10);
   const [doctor] = await db.select().from(doctorsTable).where(eq(doctorsTable.id, id));
   if (!doctor) { res.status(404).json({ error: "Doctor not found" }); return; }
   const today = new Date().toISOString().split("T")[0];
@@ -57,7 +57,8 @@ router.get("/doctors/:id", async (req, res): Promise<void> => {
 });
 
 router.patch("/doctors/:id", async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(rawId, 10);
   const { name, specialty, qualification, cabinNumber, status, newCaseFee, oldCaseFee } = req.body;
   const update: Record<string, unknown> = {};
   if (name) update.name = name;
@@ -75,7 +76,8 @@ router.patch("/doctors/:id", async (req, res): Promise<void> => {
 });
 
 router.delete("/doctors/:id", async (req, res): Promise<void> => {
-  const id = parseInt(req.params.id, 10);
+  const rawId = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
+  const id = parseInt(rawId, 10);
   const [deleted] = await db.delete(doctorsTable).where(eq(doctorsTable.id, id)).returning();
   if (!deleted) { res.status(404).json({ error: "Doctor not found" }); return; }
   res.json({ success: true, id });
