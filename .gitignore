@@ -8,6 +8,11 @@ out-tsc
 .expo
 .expo-shared
 
+# env files (never commit secrets!)
+.env
+.env.local
+
+
 # dependencies
 node_modules
 
@@ -47,3 +52,4 @@ Thumbs.db
 # Replit
 .cache/
 .local/
+.replit-artifact/

@@ -12,6 +12,8 @@ import { Send } from "lucide-react";
 export default function DoctorReferrals() {
   const { data: referrals = [], isLoading } = useListReferrals({ fromDoctorId: 1 }); // Mocking doc id 1
   const { data: doctors = [] } = useListDoctors();
+  const safeReferrals = Array.isArray(referrals) ? referrals : [];
+  const safeDoctors = Array.isArray(doctors) ? doctors : [];
   const createReferral = useCreateReferral();
   const queryClient = useQueryClient();
   const { toast } = useToast();
@@ -61,7 +63,7 @@ export default function DoctorReferrals() {
                   <Label>Select Specialist *</Label>
                   <select name="toDoctorId" required className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
                     <option value="">Select Doctor...</option>
-                    {doctors.map(d => <option key={d.id} value={d.id}>{d.name} ({d.specialty})</option>)}
+                    {safeDoctors.map(d => <option key={d.id} value={d.id}>{d.name} ({d.specialty})</option>)}
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -97,10 +99,10 @@ export default function DoctorReferrals() {
             <tbody className="divide-y border-border">
               {isLoading ? (
                 <tr><td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">Loading...</td></tr>
-              ) : referrals.length === 0 ? (
+              ) : safeReferrals.length === 0 ? (
                 <tr><td colSpan={4} className="px-6 py-8 text-center text-muted-foreground">No referrals sent.</td></tr>
               ) : (
-                referrals.map(ref => (
+                safeReferrals.map(ref => (
                   <tr key={ref.id} className="hover:bg-muted/20">
                     <td className="px-6 py-4 font-semibold">{ref.patientName}</td>
                     <td className="px-6 py-4 text-primary font-medium">{ref.toDoctorName}</td>

@@ -1,0 +1,14 @@
+{
+  "buildCommand": "pnpm --filter @workspace/medigo run build",
+  "outputDirectory": "artifacts/medigo/dist/public",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/api"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

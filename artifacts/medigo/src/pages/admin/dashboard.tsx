@@ -5,9 +5,9 @@ import { Users, Stethoscope, IndianRupee, Clock, Activity } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from "recharts";
 
 export default function AdminDashboard() {
-  const { data: stats, isLoading } = useGetDashboardStats();
+  const { data: statsData, isLoading } = useGetDashboardStats();
 
-  if (isLoading || !stats) {
+  if (isLoading) {
     return (
       <AppLayout role="admin">
         <div className="p-8 flex justify-center items-center h-full">
@@ -16,6 +16,15 @@ export default function AdminDashboard() {
       </AppLayout>
     );
   }
+
+  const stats = statsData || {
+    patientsToday: 0,
+    doctorsActive: 0,
+    revenueToday: 0,
+    queueWaiting: 0,
+    patientsPerDoctor: [],
+    recentActivity: [],
+  };
 
   const statCards = [
     { title: "Patients Today", value: stats.patientsToday, icon: Users, color: "text-blue-600", bg: "bg-blue-100", border: "border-blue-200" },

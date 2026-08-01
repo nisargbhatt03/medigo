@@ -32,8 +32,11 @@ export default function DoctorDashboard() {
   const [referReason, setReferReason] = useState("");
   const [referLoading, setReferLoading] = useState(false);
 
-  const activePatient = queue.find(q => q.status === "in-consultation");
-  const otherDoctors = doctors.filter(d => d.id !== 1);
+  const safeQueue = Array.isArray(queue) ? queue : [];
+  const safeDoctors = Array.isArray(doctors) ? doctors : [];
+
+  const activePatient = safeQueue.find(q => q.status === "in-consultation");
+  const otherDoctors = safeDoctors.filter(d => d.id !== 1);
   const selectedDoctor = otherDoctors.find(d => String(d.id) === referDoctorId);
 
   const handleCallNext = () => {
@@ -157,11 +160,11 @@ export default function DoctorDashboard() {
           <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Today's Queue</h3>
-              <Badge variant="outline" className="border-slate-700 text-slate-400">{queue.length} total</Badge>
+              <Badge variant="outline" className="border-slate-700 text-slate-400">{safeQueue.length} total</Badge>
             </div>
 
             <div className="space-y-2">
-              {queue.map(patient => (
+              {safeQueue.map(patient => (
                 <div
                   key={patient.id}
                   className={`p-3 rounded-xl flex items-center justify-between cursor-pointer transition-all ${
